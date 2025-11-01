@@ -7,16 +7,28 @@ import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
+/**
+ * Smoke test exercising the full landing flow on https://inseego.com
+ */
 public class HeaderFooterSmokeTest {
     private static final Logger log = LogManager.getLogger(HeaderFooterSmokeTest.class);
 
+    // Framework is formalized for Inseego; allow -DbaseUrl override but default hard to inseego.
+    private static String readBaseUrl() {
+        String v = System.getProperty("baseUrl", "https://inseego.com");
+        if (v == null || v.trim().isEmpty()) v = "https://inseego.com";
+        v = v.trim();
+        if (!v.startsWith("http://") && !v.startsWith("https://")) v = "https://" + v;
+        return v;
+    }
+
     @BeforeClass
     public void setUp() {
-        final String browser  = System.getProperty("browser", "chrome");
+        final String browser   = System.getProperty("browser", "chrome");
         final boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
-        final String baseUrl = System.getProperty("baseUrl", "https://inseego.com");
-        log.info("==== Test setup: browser={}, headless={}, baseUrl={} ====", browser, headless, baseUrl);
+        final String baseUrl   = readBaseUrl();
 
+        log.info("==== Test setup: browser={}, headless={}, baseUrl={} ====", browser, headless, baseUrl);
         DriverFactory.start(browser, headless);
     }
 
@@ -28,7 +40,7 @@ public class HeaderFooterSmokeTest {
 
     @Test
     public void headerFooter_flow_in_order() {
-        final String baseUrl = System.getProperty("baseUrl", "https://inseego.com");
+        final String baseUrl = readBaseUrl();
         HomePage home = new HomePage(DriverFactory.getDriver());
 
         log.info("STEP 1: Land on {}", baseUrl);

@@ -9,6 +9,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Home page object tailored for https://inseego.com
+ */
 public class HomePage {
     private static final Logger log = LogManager.getLogger(HomePage.class);
 
@@ -22,10 +25,9 @@ public class HomePage {
     // OneTrust cookie banner (site-specific id)
     private final By cookieAccept = By.cssSelector("#onetrust-accept-btn-handler");
 
-    // Promo dialog bits (be picky to avoid clicking CTA)
+    // Promo dialog bits (close affordances only)
     private final By promoContainer = By.cssSelector("div.dialogContents");
     private final By promoCloseCandidates = By.cssSelector(
-            // prefer explicit “close” affordances only
             "div.dialogContents button[aria-label*='close' i], " +
                     "div.dialogContents [role='button'][aria-label*='close' i], " +
                     "div.dialogContents button.close, " +
@@ -38,12 +40,17 @@ public class HomePage {
         log.debug("HomePage initialized");
     }
 
-    /* ============ high level actions ============ */
+    /* ================= high-level actions ================= */
 
+    /**
+     * Open the site. Falls back to https://inseego.com if input is null/blank and
+     * auto-prefixes https:// if caller passed a schemeless host.
+     */
     public void open(String baseUrl) {
-        log.info("Opening {}", baseUrl);
-        driver.get(baseUrl);
-        // basic page readiness
+        String url = sanitizeBaseUrl(baseUrl);
+        log.info("Opening {}", url);
+        driver.get(url);
+        // basic readiness
         wait.until(d -> !d.getTitle().isBlank());
     }
 
@@ -79,8 +86,8 @@ public class HomePage {
      * scrollIntoView of the footer.
      */
     public void slowScrollTowardFooterAndHandlePromo() {
-        final int steps = 22;           // demo: obvious sequence in logs
-        final long stepDelayMs = 250L;  // small pause so you can watch it
+        final int steps = 22;           // readable sequence in logs
+        final long stepDelayMs = 250L;  // small pause for visual trace
 
         Dimension size = driver.manage().window().getSize();
         int chunk = Math.max(200, (int) (size.getHeight() * 0.30));
@@ -97,7 +104,7 @@ public class HomePage {
 
             sleep(stepDelayMs);
 
-            // If footer is already in viewport, we can finish early
+            // If footer is already in viewport, finish early
             if (isFooterInViewport()) {
                 log.info("Footer reached during slow scroll (step {}).", i);
                 return;
@@ -126,7 +133,18 @@ public class HomePage {
         }
     }
 
-    /* ============ helpers ============ */
+    /* ================= helpers ================= */
+
+    private static String sanitizeBaseUrl(String baseUrl) {
+        String url = baseUrl == null ? "" : baseUrl.trim();
+        if (url.isEmpty()) {
+            url = "https://inseego.com";
+        }
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "https://" + url;
+        }
+        return url;
+    }
 
     private boolean dismissPromoIfPresent(int step) {
         try {
@@ -140,9 +158,9 @@ public class HomePage {
             List<WebElement> closers = driver.findElements(promoCloseCandidates);
             for (WebElement c : closers) {
                 if (c.isDisplayed() && c.isEnabled()) {
-                    String tag = safe(() -> c.getTagName());
+                    String tag  = safe(() -> c.getTagName());
                     String aria = safe(() -> c.getAttribute("aria-label"));
-                    String cls = safe(() -> c.getAttribute("class"));
+                    String cls  = safe(() -> c.getAttribute("class"));
 
                     c.click();
                     log.info("Promo close clicked: tag={} aria-label={} class={}", tag, aria, cls);
@@ -157,8 +175,7 @@ public class HomePage {
                 }
             }
 
-            // Fallbacks for stubborn dialogs (demo only):
-            // 1) try ESC on <body>
+            // Fallbacks for stubborn dialogs:
             try {
                 driver.switchTo().activeElement().sendKeys(Keys.ESCAPE);
                 sleep(250);
@@ -169,11 +186,11 @@ public class HomePage {
                 }
             } catch (Exception ignored) {}
 
-            // 2) as a last resort, hide the container (demo safety valve)
+            // Last resort: hide container (demo safety valve)
             ((JavascriptExecutor) driver).executeScript(
                     "const el = document.querySelector('div.dialogContents'); if (el) el.style.display='none';");
             sleep(150);
-            log.info("Promo forcibly hidden for demo (step {}).", step);
+            log.info("Promo forcibly hidden (step {}).", step);
             return true;
 
         } catch (StaleElementReferenceException ignored) {
