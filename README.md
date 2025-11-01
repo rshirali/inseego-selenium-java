@@ -1,65 +1,126 @@
-# Inseego Playwright TypeScript Framework
+# Inseego – Selenium Java Automation Framework
 
-A clean, professional-grade Playwright + TypeScript test framework built to validate public routes and UI flows for **Inseego.com**.
+This repository contains a Selenium + TestNG + Maven automation framework for validating UI flows on the Inseego website.
+
+The framework demonstrates a clean, maintainable structure and reproducible test execution using standard Java-based tools.
+
+## Tech Stack
+
+| Tool | Purpose |
+|------|----------|
+| Java 17+ | Programming language |
+| Selenium WebDriver | UI automation engine |
+| TestNG | Test framework (annotations, reports, assertions) |
+| Maven | Build tool and dependency management |
+| Log4j2 | Logging configuration |
+
+## Project Structure
+```
+inseego-selenium-java/
+├── pom.xml
+├── src
+│   ├── main/java/com/demo/core/DriverFactory.java
+│   ├── main/java/com/demo/pages/HomePage.java
+│   └── test/java/com/demo/tests/HeaderFooterSmokeTest.java
+└── target/
+    └── surefire-reports/
+```
+
+### Key Components
+- DriverFactory.java – Manages browser setup and teardown  
+- HomePage.java – Page Object for the landing page  
+- HeaderFooterSmokeTest.java – Test verifying page sections  
 
 ## Prerequisites
-- Node.js 20+
-- npm 9+
-- Playwright 1.56+
 
-Install dependencies:
+Ensure the following are installed:
+
+| Tool | Version | Check Command |
+|------|----------|---------------|
+| Java | 17+ | `java -version` |
+| Maven | 3.9+ | `mvn -v` |
+| Git | Latest | `git --version` |
+| Browser | Chrome or Edge | Preinstalled |
+
+ChromeDriver and EdgeDriver are automatically managed via WebDriverManager.
+
+## Setup and Run
+
+### Clone the repository
 ```bash
-npm ci
+git clone git@github.com:rshirali/inseego-selenium-java.git
+cd inseego-selenium-java
 ```
 
-## Folder Structure
-```
-├── README.md
-├── package.json
-├── playwright.config.ts
-├── src/
-│   └── pages/
-│       └── HomePage.ts
-├── tests/
-│   └── inseego.headerFooter.spec.ts
-├── utils/
-│   ├── ui.ts
-│   └── printResolvedConfig.ts
-```
-
-## Run Tests
-### Headed Chrome
+### Build the project
 ```bash
-BASE_URL=https://inseego.com npm run test:headed:chrome
+mvn clean compile
 ```
 
-### Headed Firefox
+### Run tests
 ```bash
-BASE_URL=https://inseego.com npm run test:headed:firefox
+mvn test
 ```
 
-### Headless (default)
+Or specify runtime parameters:
 ```bash
-npm run test
+mvn -DbaseUrl=https://inseego.com -Dbrowser=chrome -Dheadless=false test
 ```
 
-### Print Effective Config
-```bash
-npm run pw:print
+### View reports
+After execution:
+```
+target/surefire-reports/index.html
 ```
 
-## Reports
-After a run:
-```bash
-npx playwright show-report
-```
-Screenshots (if enabled with `SCREENSHOT=true`) are available in `target/test-output/artifacts`.
+## Test Configuration
 
-## Git Hygiene
-When contributing:
-- Use clear commit prefixes: `feat:`, `fix:`, `refactor:`, `docs:`
-- Keep commits atomic and testable
-- Avoid committing reports, node_modules, or local debug files
+TestNG suite file: `src/test/resources/testng.xml`
+
+```xml
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Inseego Suite">
+  <test name="Smoke">
+    <classes>
+      <class name="com.demo.tests.HeaderFooterSmokeTest"/>
+    </classes>
+  </test>
+</suite>
+```
+
+## Common Maven Commands
+
+| Command | Purpose |
+|----------|----------|
+| `mvn clean` | Remove old build files |
+| `mvn compile` | Compile main source |
+| `mvn test` | Run all tests |
+| `mvn surefire-report:report` | Generate HTML reports |
+| `mvn dependency:tree` | Show dependency graph |
+
+## Folder Summary
+
+| Folder | Description |
+|---------|--------------|
+| `src/main/java` | Framework and page object source |
+| `src/test/java` | TestNG tests |
+| `src/test/resources` | Config and XML suite |
+| `target/` | Compiled classes, reports, logs |
+
+## .gitignore Reference
+```
+target/
+*.class
+*.log
+*.iml
+.idea/
+.vscode/
+.DS_Store
+test-output/
+surefire-reports/
+```
 
 ## Author
-Rajeev Shirali — QA Automation Architect
+Rajeev Shirali  
+Automation Architect / SDET  
+https://github.com/rshirali
