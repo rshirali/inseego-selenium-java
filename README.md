@@ -1,156 +1,65 @@
-# Inseego – Selenium Java Automation Framework
+# Inseego Playwright TypeScript Framework
 
-This repository contains a simple **Selenium + TestNG + Maven** automation framework
-for validating UI flows on the [Inseego website](https://inseego.com).
+A clean, professional-grade Playwright + TypeScript test framework built to validate public routes and UI flows for **Inseego.com**.
 
-The goal is to demonstrate clean structure, maintainable code, and reproducible
-test execution using Java-based tools.
+## Prerequisites
+- Node.js 20+
+- npm 9+
+- Playwright 1.56+
 
----
-
-## 🧰 Tech Stack
-
-| Tool | Purpose |
-|------|----------|
-| **Java 17+** | Programming language |
-| **Selenium WebDriver** | UI automation engine |
-| **TestNG** | Test framework (annotations, reports, assertions) |
-| **Maven** | Build tool and dependency management |
-| **Log4j2** | Logging configuration |
-
----
-
-## 📦 Project Structure
-
-```
-inseego-selenium-java/
-├── pom.xml
-├── src
-│   ├── main/java/com/demo/core/DriverFactory.java
-│   ├── main/java/com/demo/pages/HomePage.java
-│   └── test/java/com/demo/tests/HeaderFooterSmokeTest.java
-└── target/
-    └── surefire-reports/
-```
-
-### Key Components
-- **DriverFactory.java** → Manages browser setup and teardown.
-- **HomePage.java** → Page Object class for the landing page.
-- **HeaderFooterSmokeTest.java** → TestNG test verifying page sections.
-
----
-
-## ⚙️ Prerequisites
-
-Ensure the following are installed on your system:
-
-| Tool | Version | Check Command |
-|------|----------|----------------|
-| Java | 17 or newer | `java -version` |
-| Maven | 3.9+ | `mvn -v` |
-| Git | Latest | `git --version` |
-| Browser | Chrome or Edge | preinstalled |
-
-> 💡 **Note:** ChromeDriver / EdgeDriver are automatically managed via `WebDriverManager`
-if included in your dependencies.
-
----
-
-## 🚀 Setup & Run
-
-### 1️⃣ Clone the repository
+Install dependencies:
 ```bash
-git clone git@github.com:rshirali/inseego-selenium-java.git
-cd inseego-selenium-java
+npm ci
 ```
 
-### 2️⃣ Build the project
+## Folder Structure
+```
+├── README.md
+├── package.json
+├── playwright.config.ts
+├── src/
+│   └── pages/
+│       └── HomePage.ts
+├── tests/
+│   └── inseego.headerFooter.spec.ts
+├── utils/
+│   ├── ui.ts
+│   └── printResolvedConfig.ts
+```
+
+## Run Tests
+### Headed Chrome
 ```bash
-mvn clean compile
+BASE_URL=https://inseego.com npm run test:headed:chrome
 ```
 
-### 3️⃣ Run tests
+### Headed Firefox
 ```bash
-mvn test
+BASE_URL=https://inseego.com npm run test:headed:firefox
 ```
 
-### 4️⃣ View Reports
-After execution, open the TestNG HTML report:
-
-```
-target/surefire-reports/index.html
+### Headless (default)
+```bash
+npm run test
 ```
 
----
-
-## 🧩 Test Configuration
-
-TestNG suite file:  
-`src/test/resources/testng.xml`
-
-Example:
-```xml
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Inseego Suite">
-  <test name="Smoke">
-    <classes>
-      <class name="com.demo.tests.HeaderFooterSmokeTest"/>
-    </classes>
-  </test>
-</suite>
+### Print Effective Config
+```bash
+npm run pw:print
 ```
 
----
-
-## 🧱 Common Maven Commands
-
-| Command | Purpose |
-|----------|----------|
-| `mvn clean` | Remove old build files |
-| `mvn compile` | Compile main source code |
-| `mvn test` | Run all tests |
-| `mvn surefire-report:report` | Generate HTML reports |
-| `mvn dependency:tree` | View dependency graph |
-
----
-
-## 🧭 Folder Summary
-
-| Folder | Description |
-|---------|--------------|
-| `src/main/java` | Framework and page object source |
-| `src/test/java` | TestNG tests |
-| `src/test/resources` | Config and XML test suite |
-| `target/` | Compiled classes, reports, logs (auto-generated) |
-
----
-
-## 🧹 .gitignore (for reference)
-
+## Reports
+After a run:
+```bash
+npx playwright show-report
 ```
-target/
-*.class
-*.log
-*.iml
-.idea/
-.vscode/
-.DS_Store
-test-output/
-surefire-reports/
-```
+Screenshots (if enabled with `SCREENSHOT=true`) are available in `target/test-output/artifacts`.
 
----
+## Git Hygiene
+When contributing:
+- Use clear commit prefixes: `feat:`, `fix:`, `refactor:`, `docs:`
+- Keep commits atomic and testable
+- Avoid committing reports, node_modules, or local debug files
 
-## 📘 Notes
-
-- Default browser: **Chrome**
-- Extendable to Firefox/Edge via `DriverFactory`
-- Modular structure for future parallel execution or CI/CD integration.
-
----
-
-## 🧑‍💻 Author
-
-**Rajeev Shirali**  
-Automation Architect / SDET  
-[GitHub Profile](https://github.com/rshirali)
+## Author
+Rajeev Shirali — QA Automation Architect
