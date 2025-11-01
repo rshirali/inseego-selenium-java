@@ -1,0 +1,40 @@
+# --- Maven / Build ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# --- Test Reports ---
+surefire-reports/
+test-output/
+logs/
+*.dump
+*.dumpstream
+*.xml
+*.html
+*.png
+*.gif
+*.css
+*.js
+
+# --- IDE & Editor Files ---
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# --- OS & Misc ---
+.DS_Store
+Thumbs.db
+
+# --- Environment / Temp ---
+*.env
+*.local
+*.tmp
+*.bak
